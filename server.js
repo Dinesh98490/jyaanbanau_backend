@@ -59,16 +59,20 @@ import mongoose from "mongoose";
 import userRoutes from "./routes/userRoutes.js"; // import router
 import classRoutes from "./routes/classRoutes.js";
 import dietPlanRoutes from "./routes/dietPlanRoutes.js";
+import trainerRoutes from "./routes/trainerRoutes.js";
 
 const app = express();
 
 // Body parser
 app.use(express.json());
 
+
+
 // Mount user routes at /api/users
 app.use("/api/users", userRoutes);
 app.use("/api/classes", classRoutes);
 app.use("/api/diets", dietPlanRoutes)
+app.use("/api/trainers", trainerRoutes);
 
 
 
