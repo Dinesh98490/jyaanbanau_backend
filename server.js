@@ -60,6 +60,7 @@ import userRoutes from "./routes/userRoutes.js"; // import router
 import classRoutes from "./routes/classRoutes.js";
 import dietPlanRoutes from "./routes/dietPlanRoutes.js";
 import trainerRoutes from "./routes/trainerRoutes.js";
+import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 
 const app = express();
 
@@ -73,6 +74,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/classes", classRoutes);
 app.use("/api/diets", dietPlanRoutes)
 app.use("/api/trainers", trainerRoutes);
+app.use("/api/subscriptions", subscriptionRoutes);
 
 
 
