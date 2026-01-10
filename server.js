@@ -62,6 +62,7 @@ import dietPlanRoutes from "./routes/dietPlanRoutes.js";
 import trainerRoutes from "./routes/trainerRoutes.js";
 import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 import progressRoutes from "./routes/progressRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
 
 const app = express();
 
@@ -77,7 +78,7 @@ app.use("/api/diets", dietPlanRoutes)
 app.use("/api/trainers", trainerRoutes);
 app.use("/api/subscriptions", subscriptionRoutes);
 app.use("/api/progress", progressRoutes);
-
+app.use("/api/payments", paymentRoutes);
 
 
 // Health check (optional)
