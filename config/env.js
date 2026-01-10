@@ -51,3 +51,4 @@ export const env = {
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || '',
   YJS_WS_URL: process.env.YJS_WS_URL || '',
 };
+
