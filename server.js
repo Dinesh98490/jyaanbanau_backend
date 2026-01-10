@@ -63,6 +63,7 @@ import trainerRoutes from "./routes/trainerRoutes.js";
 import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 import progressRoutes from "./routes/progressRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
+import attendanceRoutes from "./routes/attendanceRoutes.js";
 
 const app = express();
 
@@ -79,6 +80,7 @@ app.use("/api/trainers", trainerRoutes);
 app.use("/api/subscriptions", subscriptionRoutes);
 app.use("/api/progress", progressRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/attendance", attendanceRoutes);
 
 
 // Health check (optional)
