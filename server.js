@@ -58,6 +58,7 @@ import express from "express";
 import mongoose from "mongoose";
 import userRoutes from "./routes/userRoutes.js"; // import router
 import classRoutes from "./routes/classRoutes.js";
+import dietPlanRoutes from "./routes/dietPlanRoutes.js";
 
 const app = express();
 
@@ -67,6 +68,9 @@ app.use(express.json());
 // Mount user routes at /api/users
 app.use("/api/users", userRoutes);
 app.use("/api/classes", classRoutes);
+app.use("/api/diets", dietPlanRoutes)
+
+
 
 // Health check (optional)
 app.get("/v1/health", (req, res) => {

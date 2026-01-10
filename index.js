@@ -18,6 +18,8 @@
 
 import express from "express";
 import userRoutes from "./routes/userRoutes.js";
+import classRoutes from "./routes/classRoutes.js";
+import dietPlanRoutes from "./routes/dietPlanRoutes.js";
 
 const router = express.Router();
 
@@ -31,5 +33,11 @@ router.get("/v1/health", (req, res) => {
 
 // User routes
 router.use("/api/users", userRoutes);
+router.use("/api/classes", classRoutes);
+router.use("/api/diets", dietPlanRoutes)
+
+
+
+
 
 export default router;
