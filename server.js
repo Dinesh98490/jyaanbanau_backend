@@ -1,4 +1,6 @@
-// import http from 'http';
+import dotenv from "dotenv";
+dotenv.config();
+import express from "express";
 // import app from './app.js';
 // import { connectDB } from './config/db.js';
 // import { env } from './config/env.js';
@@ -54,7 +56,6 @@
 //   }
 // })();
 
-import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import userRoutes from "./routes/userRoutes.js"; // import router

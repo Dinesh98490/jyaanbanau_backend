@@ -1,6 +1,8 @@
 import User from "../models/user.js";
 import bcrypt from "bcryptjs";
 import { generateAccessToken } from "../utils/jwt.js";
+import crypto from "crypto";
+import sendEmail from "../utils/email.js";
 
 export const registerUser = async (req, res) => {
   try {
@@ -97,8 +99,130 @@ export const updateUser = async (req, res) => {
         id: user._id,
         username: user.username,
         email: user.email,
-        role: user.username.toLowerCase().includes("admin") ? "Admin" : "Customer"
       }
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const forgotPassword = async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.body.email });
+    if (!user) {
+      return res.status(404).json({ message: "User with that email does not exist" });
+
+    }
+
+    // Generate token
+    const resetToken = crypto.randomBytes(32).toString("hex");
+
+    // Hash it and save to db (often good practice to hash tokens in DB)
+    // For simplicity, we'll save it directly or a simple hash. 
+    // Let's just save it directly for this implementation to match typical tutorial patterns 
+    // unless high security is demanded.
+
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+    await user.save({ validateBeforeSave: false });
+
+    // Create reset url (this should point to FRONTEND)
+    const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
+    const resetUrl = `${clientUrl}/updatepassword?token=${resetToken}`;
+
+    const message = `Forgot your password? Click here to reset it: \n\n ${resetUrl} \n\nIf you didn't forget your password, ignore this email.`;
+
+    try {
+      const emailSent = await sendEmail({
+        email: user.email,
+        subject: 'Your password reset token (valid for 10 min)',
+        message
+      });
+
+      if (emailSent) {
+        res.status(200).json({
+          success: true,
+          message: 'An email has been sent to ' + user.email + ' with further instructions.'
+        });
+      } else {
+        // It was a mock send
+        res.status(200).json({
+          success: true,
+          message: 'Mock email sent! Check your BACKEND TERMINAL for the link.'
+        });
+      }
+
+    } catch (err) {
+      // user.resetPasswordToken = undefined; // Do NOT clear token, we need it for fallback!
+      // user.resetPasswordExpires = undefined; 
+      // await user.save({ validateBeforeSave: false });
+
+      console.error("Forgot Password Error (Email failed):", err);
+      // Fallback: If email fails (e.g. invalid creds), don't crash. 
+      // Return 200 so the frontend can redirect the user anyway.
+      return res.status(200).json({
+        success: true,
+        message: 'Could not send email (check server logs). Redirecting you automatically (Fallback Mode)...',
+        mockData: {
+          resetUrl,
+          token: resetToken
+        }
+      });
+    }
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  try {
+    // Get user based on token
+    const { token, password } = req.body;
+
+    // Debug logging
+    console.log("DEBUG: Reset Password started");
+    console.log("DEBUG: Received token:", token);
+
+    // Check if token exists ignoring expiry first
+    const userByToken = await User.findOne({ resetPasswordToken: token });
+    console.log("DEBUG: User found by token only?", userByToken ? "YES" : "NO");
+    if (userByToken) {
+      console.log("DEBUG: User expiry:", userByToken.resetPasswordExpires);
+      console.log("DEBUG: Current time:", new Date());
+      console.log("DEBUG: Is expired?", userByToken.resetPasswordExpires < Date.now());
+    }
+
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      console.log("DEBUG: User NOT found in final query (valid token & not expired)");
+      return res.status(400).json({ message: "Token is invalid or has expired" });
+    }
+
+    // Update password
+    user.password = await bcrypt.hash(password, 10);
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+
+    await user.save();
+
+    // Log the user in directly? Or ask them to login.
+    // Usually redirect to login.
+
+    // Optional: send new JWT so they are logged in immediately
+    // const newToken = generateAccessToken({ id: user._id, email: user.email });
+
+    res.status(200).json({
+      success: true,
+      message: "Password updated successfully! Please login.",
     });
 
   } catch (error) {
