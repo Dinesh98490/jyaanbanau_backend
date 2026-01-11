@@ -17,7 +17,12 @@ export const createPayment = async (req, res) => {
 // GET all payments
 export const getPayments = async (req, res) => {
   try {
-    const payments = await Payment.find().sort({ createdAt: -1 });
+    const { name } = req.query;
+    let query = {};
+    if (name) {
+      query.name = name;
+    }
+    const payments = await Payment.find(query).sort({ createdAt: -1 });
     res.status(200).json({ success: true, data: payments });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

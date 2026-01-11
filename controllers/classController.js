@@ -1,4 +1,5 @@
 import GymClass from "../models/class.js";
+import User from "../models/user.js";
 
 // Create a new class
 export const createClass = async (req, res) => {
@@ -62,6 +63,28 @@ export const deleteClass = async (req, res) => {
     if (!gymClass) return res.status(404).json({ success: false, message: "Class not found" });
 
     res.json({ success: true, message: "Class deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+// Book a class
+// Book a class
+export const bookClass = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const classId = req.params.id;
+
+    if (!userId) {
+      return res.status(400).json({ success: false, message: "User ID required" });
+    }
+
+    // Update User
+    await User.findByIdAndUpdate(userId, {
+      $addToSet: { bookedClasses: classId }
+    });
+
+    res.status(200).json({ success: true, message: "Class booked successfully" });
   } catch (err) {
     res.status(500).json({ success: false, message: "Server error" });
   }

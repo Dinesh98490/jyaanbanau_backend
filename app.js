@@ -11,12 +11,9 @@ import { env } from './config/env.js';
 
 const app = express();
 
-// Security & middleware
-app.use(helmet());
-// In development, reflect request origin to avoid strict CORS mismatches
-const corsOrigin = env.NODE_ENV === 'development' ? true : env.CLIENT_ORIGIN;
+// CORS - Must be first
 const corsOptions = {
-  origin: corsOrigin,
+  origin: ['http://localhost:5173', 'http://localhost:5001'],
   credentials: true,
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -24,7 +21,13 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 // Explicitly handle preflight for all routes
-// app.options('*', cors(corsOptions));
+app.options('*', cors(corsOptions));
+
+// Security & middleware
+app.use(helmet());
+
+// In development, reflect request origin to avoid strict CORS mismatches
+// const corsOrigin = ... (Removed redundant logic for now to ensure stability)
 
 app.use(morgan('dev'));
 app.use(express.json({ limit: '1mb' }));
@@ -41,6 +44,9 @@ app.use(limiter);
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', uptime: process.uptime() });
 });
+
+// Serve static uploads
+app.use('/uploads', express.static('uploads'));
 
 // Routes
 app.use('/api', routes);

@@ -3,9 +3,9 @@ import Progress from "../models/progress.js";
 // CREATE progress
 export const createProgress = async (req, res) => {
   try {
-    const { name, duration, percentage } = req.body;
+    const { name, title, duration, percentage } = req.body;
 
-    const progress = new Progress({ name, duration, percentage });
+    const progress = new Progress({ name, title, duration, percentage });
     await progress.save();
 
     res.status(201).json({ success: true, message: "Progress created", data: progress });
@@ -17,7 +17,12 @@ export const createProgress = async (req, res) => {
 // GET all progress
 export const getProgressList = async (req, res) => {
   try {
-    const progressList = await Progress.find().sort({ createdAt: -1 });
+    const { name } = req.query;
+    let query = {};
+    if (name) {
+      query.name = name;
+    }
+    const progressList = await Progress.find(query).sort({ createdAt: -1 });
     res.status(200).json({ success: true, data: progressList });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -39,11 +44,11 @@ export const getProgressById = async (req, res) => {
 // UPDATE progress
 export const updateProgress = async (req, res) => {
   try {
-    const { name, duration, percentage } = req.body;
+    const { name, title, duration, percentage } = req.body;
 
     const progress = await Progress.findByIdAndUpdate(
       req.params.id,
-      { name, duration, percentage },
+      { name, title, duration, percentage },
       { new: true }
     );
 

@@ -10,7 +10,7 @@
 // (async () => {
 //   try {
 //     await connectDB();
-    
+
 //     server.listen(env.PORT, () => {
 //       console.log(` Jyaanbanau Server listening on http://localhost:${env.PORT}`);
 //       console.log(`WebSocket server ready on ws://localhost:${env.PORT}`);
@@ -55,6 +55,7 @@
 // })();
 
 import express from "express";
+import cors from "cors";
 import mongoose from "mongoose";
 import userRoutes from "./routes/userRoutes.js"; // import router
 import classRoutes from "./routes/classRoutes.js";
@@ -67,10 +68,22 @@ import attendanceRoutes from "./routes/attendanceRoutes.js";
 
 const app = express();
 
+const corsOptions = {
+  origin: true,
+  credentials: true,
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 204
+};
+app.use(cors(corsOptions));
+// app.options('*', cors(corsOptions)); // causing PathError with newer path-to-regexp
+
+
 // Body parser
 app.use(express.json());
 
-
+// Serve static uploads
+app.use('/uploads', express.static('uploads'));
 
 // Mount user routes at /api/users
 app.use("/api/users", userRoutes);

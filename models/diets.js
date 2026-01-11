@@ -17,12 +17,22 @@ const dietPlanSchema = new mongoose.Schema(
       required: true,
     },
     image: {
-      type: String, 
-        required: true,
+      type: String,
+      required: true,
     },
     description: {
       type: String,
       required: true,
+    },
+    dietaryDetails: {
+      include: [String],
+      avoid: [String],
+      sampleMenu: {
+        breakfast: String,
+        lunch: String,
+        dinner: String,
+        snack: String,
+      },
     },
   },
   { timestamps: true }

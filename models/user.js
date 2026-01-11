@@ -19,6 +19,10 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    bookedClasses: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'GymClass'
+    }],
   },
   {
     timestamps: true,
