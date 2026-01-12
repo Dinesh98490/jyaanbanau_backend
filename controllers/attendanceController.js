@@ -27,7 +27,6 @@ export const getAllAttendance = async (req, res) => {
   try {
     const records = await Attendance.find()
       .populate("userId", "name") // populate user name
-      .populate("sessionId", "name") // populate session name
       .sort({ date: -1 });
     res.status(200).json({ success: true, data: records });
   } catch (error) {
@@ -40,7 +39,6 @@ export const getAttendanceById = async (req, res) => {
   try {
     const record = await Attendance.findById(req.params.id)
       .populate("userId", "name")
-      .populate("sessionId", "name");
 
     if (!record)
       return res.status(404).json({ success: false, message: "Attendance not found" });

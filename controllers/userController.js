@@ -230,3 +230,84 @@ export const resetPassword = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().select("-password");
+    console.log(`DEBUG: getAllUsers found ${users.length} users`);
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Admin: Create User
+export const createUserByAdmin = async (req, res) => {
+  try {
+    const { username, email, password, role } = req.body;
+
+    if (!username || !email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+    if (existingUser) {
+      return res.status(409).json({ message: "User already exists" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await User.create({
+      username,
+      email,
+      password: hashedPassword,
+      role: role || "customer",
+    });
+
+    res.status(201).json({
+      message: "User created successfully",
+      user: {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        createdAt: user.createdAt
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Admin: Update User
+export const updateUserByAdmin = async (req, res) => {
+  try {
+    const { username, email, role } = req.body;
+    const userId = req.params.id;
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { username, email, role },
+      { new: true, runValidators: true }
+    ).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ message: "User updated successfully", user });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const deleteUser = async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json({ message: "User deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};

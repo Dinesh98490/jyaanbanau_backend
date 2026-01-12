@@ -4,13 +4,20 @@ import User from "../models/user.js";
 // Create a new class
 export const createClass = async (req, res) => {
   try {
-    const { name, description, totalMembers, level, trainerName } = req.body;
+    const { name, description, totalMembers, level, trainerName, image } = req.body;
 
     if (!name || !description || !level || !trainerName) {
       return res.status(400).json({ success: false, message: "All required fields must be provided" });
     }
 
-    const gymClass = await GymClass.create({ name, description, totalMembers, level, trainerName });
+    const gymClass = await GymClass.create({
+      name,
+      description,
+      totalMembers,
+      level,
+      trainerName,
+      image
+    });
 
     res.status(201).json({
       success: true,
@@ -47,7 +54,11 @@ export const getClassById = async (req, res) => {
 // Update a class
 export const updateClass = async (req, res) => {
   try {
-    const gymClass = await GymClass.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const gymClass = await GymClass.findByIdAndUpdate(
+      req.params.id,
+      req.body, // Body now includes 'image' if sent
+      { new: true }
+    );
     if (!gymClass) return res.status(404).json({ success: false, message: "Class not found" });
 
     res.json({ success: true, message: "Class updated successfully", gymClass });

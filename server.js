@@ -66,6 +66,7 @@ import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 import progressRoutes from "./routes/progressRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import attendanceRoutes from "./routes/attendanceRoutes.js";
+import esewaRoutes from "./routes/esewaRoutes.js";
 
 const app = express();
 
@@ -81,13 +82,17 @@ app.use(cors(corsOptions));
 
 
 // Body parser
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Serve static uploads
 app.use('/uploads', express.static('uploads'));
 
+import adminRoutes from "./routes/admin.routes.js";
+
 // Mount user routes at /api/users
 app.use("/api/users", userRoutes);
+app.use("/api/admin", adminRoutes);
 app.use("/api/classes", classRoutes);
 app.use("/api/diets", dietPlanRoutes)
 app.use("/api/trainers", trainerRoutes);
@@ -95,6 +100,7 @@ app.use("/api/subscriptions", subscriptionRoutes);
 app.use("/api/progress", progressRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/attendance", attendanceRoutes);
+app.use("/api/esewa", esewaRoutes);
 
 
 // Health check (optional)

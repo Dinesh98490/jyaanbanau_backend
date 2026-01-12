@@ -13,10 +13,10 @@ const classSchema = new mongoose.Schema(
       trim: true,
     },
     trainerName: {
-        type: String,
-        required: true,
-        trim: true,
-      },
+      type: String,
+      required: true,
+      trim: true,
+    },
     totalMembers: {
       type: Number,
       default: 0,
@@ -27,7 +27,11 @@ const classSchema = new mongoose.Schema(
       required: true,
       enum: ["Beginner", "Intermediate", "Advanced"],
     },
- 
+    image: {
+      type: String, // Base64 string or URL
+      default: "",
+    },
+
   },
   {
     timestamps: true,

@@ -19,6 +19,11 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    role: {
+      type: String,
+      enum: ["customer", "admin"],
+      default: "customer",
+    },
     bookedClasses: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'GymClass'
